@@ -36,10 +36,9 @@ const questions = [
 ];
 
 // function to view all employees employee.manager_id CONCAT(employee.first_name, ' ', employee.last_name)
-// "SELECT role.id, employee.first_name, employee.last_name, role.title, department.department_name AS department, role.salary, employee.manager_id AS manager from employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id JOIN employee ON employee.manager_id = employee.id"
 function viewAllEmployees() {
     console.log('Viewing all Employees');
-    db.query("SELECT role.id, employee1.first_name, employee1.last_name, role.title, department.department_name AS department, role.salary, employee1.manager_id AS manager FROM employee AS employee1 JOIN role ON employee1.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee AS employee2 ON employee1.manager_id = employee2.id", (err, result) => {
+    db.query("SELECT e1.id, e1.first_name AS employee_first_name, e1.last_name AS employee_last_name, role.title, department.department_name AS department, role.salary, CONCAT(e2.first_name, ' ', e2.last_name) AS manager_name FROM employee AS e1 LEFT JOIN role ON e1.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee AS e2 ON e1.manager_id = e2.id", (err, result) => {
         if (err) {
             console.log(err)
         } 
@@ -48,6 +47,85 @@ function viewAllEmployees() {
     });
 };
 
+function addEmployee() {
+    console.log('Add employee data');
+    db.query("SELECT id, title FROM role", (err, result) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        const roles = result.map(({ id, title }) => ({
+            name: title,
+            value: id,
+        }));
+
+    db.query('SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee', (err, result) => {
+             if (err) {
+                    console.log(err);
+                    return;
+            }
+            const managers = result.map(({ id, name }) => ({
+                name,
+                value: id,
+            }));
+            inquirer
+                .prompt([
+                    {
+                        type: "input",
+                        name: "firstName",
+                        message: "What is the employees's first name?",
+                    },
+                    {
+                        type: "input",
+                        name: "lastName",
+                        message: "What is the employees's last name?",
+                    },
+                    {
+                        type: "list",
+                        name: "roleId",
+                        message: "What is the employees's role?",
+                        choices: roles,
+                    },
+                    {
+                        type: "list",
+                        name: "managerId",
+                        message: "Who is the employee's manager?",
+                        choices: [
+                            { name: "None", value: null },
+                            ...managers,
+                            ],
+                    },
+                ])
+                .then((responses) => {
+                    console.log(responses);
+                    const sql =
+                        "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
+                    const values = [
+                        responses.firstName,
+                        responses.lastName,
+                        responses.roleId,
+                        responses.managerId,
+                        ];
+                    db.query(sql, values, (err) => {
+                        if (err) {
+                            console.log(err);
+                            return;
+                        }
+                        console.log("Welcome to the team!!");
+                        init();
+                    });
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+            }
+        );
+    });
+
+   
+};
+
+// function to view all Roles
 function viewAllRoles() {
     console.log('View all Roles');
     db.query("SELECT role.id, role.title, department.department_name, role.salary from role join department on role.department_id = department.id", (err, result) => {
@@ -58,7 +136,7 @@ function viewAllRoles() {
         init();
     });
 };
-
+// function to view all Departments
 function viewAllDepartments() {
     console.log('View all Departments');
     db.query("SELECT * FROM department", (err, result) => {
