@@ -45,7 +45,19 @@ function viewAllEmployees() {
         console.table(result);
         init();
     });
-}
+};
+
+function viewAllRoles(){
+    console.log('View all Roles');
+    db.query("SELECT role.id, role.title, department.department_name, role.salary from role join department on role.department_id = department.id", (err, result) => {
+        if (err) {
+            console.log(err)
+        } 
+        console.table(result);
+        init();
+    });
+
+};
 
 // initiate prompt questions
 function init() {
