@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const mysql = require('mysql2')
+const mysql = require('mysql2');
 
 const db = mysql.createConnection(
     {
@@ -7,8 +7,8 @@ const db = mysql.createConnection(
       // MySQL username,
       user: 'root',
       // MySQL password
-      password: '',
-      database: 'corporate_db'
+      password: 'toby4545',
+      database: 'corporate_db',
     },
     console.log(`Connected to the corporate_db database.`)
 );
@@ -37,7 +37,14 @@ const questions = [
 
 // function to view all employees
 function viewAllEmployees() {
-    console.log('Viewing all Employees')
+    console.log('Viewing all Employees');
+    db.query("SELECT * FROM department", (err, result) => {
+        if (err) {
+            console.log(err)
+        } 
+        console.table(result);
+        init();
+    });
 }
 
 // initiate prompt questions
