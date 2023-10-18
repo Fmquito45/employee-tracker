@@ -35,10 +35,11 @@ const questions = [
     }
 ];
 
-// function to view all employees
+// function to view all employees employee.manager_id CONCAT(employee.first_name, ' ', employee.last_name)
+// "SELECT role.id, employee.first_name, employee.last_name, role.title, department.department_name AS department, role.salary, employee.manager_id AS manager from employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id JOIN employee ON employee.manager_id = employee.id"
 function viewAllEmployees() {
     console.log('Viewing all Employees');
-    db.query("SELECT * FROM department", (err, result) => {
+    db.query("SELECT role.id, employee1.first_name, employee1.last_name, role.title, department.department_name AS department, role.salary, employee1.manager_id AS manager FROM employee AS employee1 JOIN role ON employee1.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee AS employee2 ON employee1.manager_id = employee2.id", (err, result) => {
         if (err) {
             console.log(err)
         } 
@@ -47,9 +48,20 @@ function viewAllEmployees() {
     });
 };
 
-function viewAllRoles(){
+function viewAllRoles() {
     console.log('View all Roles');
     db.query("SELECT role.id, role.title, department.department_name, role.salary from role join department on role.department_id = department.id", (err, result) => {
+        if (err) {
+            console.log(err)
+        } 
+        console.table(result);
+        init();
+    });
+};
+
+function viewAllDepartments() {
+    console.log('View all Departments');
+    db.query("SELECT * FROM department", (err, result) => {
         if (err) {
             console.log(err)
         } 
