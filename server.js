@@ -33,13 +33,36 @@ const questions = [
             "Quit"
         ]
     }
-]
+];
 
+// function to view all employees
+function viewAllEmployees() {
+    console.log('Viewing all Employees')
+}
+
+// initiate prompt questions
 function init() {
     console.log('prompts questions')
     inquirer
         .prompt(questions)
         .then((responses) => {
             console.log(responses);
+            if (responses.tracker === "View All Employees") {
+                viewAllEmployees();
+              } else if (responses.tracker === "Add Employee") {
+                addEmployee();
+              } else if (responses.tracker === "Update Employee Role") {
+                updateEmployeeRole();
+              } else if (responses.tracker === "View All Roles") {
+                viewAllRoles();
+              } else if (responses.tracker === "Add Role") {
+                addRole();
+              } else if (responses.tracker === "View All Departments") {
+                viewAllDepartments();
+              } else if (responses.tracker === "Add Department") {
+                addDepartment();
+              } else if (responses.tracker === "Quit") {
+                quit();
+              } 
         });
 };
