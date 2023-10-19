@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-
+// mysql connection created
 const db = mysql.createConnection(
     {
       host: 'localhost',
@@ -10,11 +10,11 @@ const db = mysql.createConnection(
     },
     console.log(`Connected to the corporate_db database.`)
 );
-
+// connect to corporate_db
 db.connect(() => {
     init();
 });
-
+// initial prompted questions
 const questions = [
     {
         type: "list",
@@ -241,9 +241,7 @@ function addRole () {
                 );
             });
     });
-}
-
-
+};
 // function to view all Departments
 function viewAllDepartments() {
     console.log('View all Departments');
@@ -254,9 +252,33 @@ function viewAllDepartments() {
         console.table(result);
         init();
     });
-
 };
-
+// function to add departments to database
+function addDepartment () {
+    console.log("Adding department");
+    inquirer
+        .prompt({
+            type: "input",
+            name: "name",
+            message: "What is the name of the department?",
+        })
+        .then((responses) => {
+            console.log(responses.name);
+            const sql = "INSERT INTO department (department_name) VALUES (?)";
+            const values = [
+                responses.name
+            ];
+            db.query(sql, values, (err, res) => {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                console.log(`Added ${responses.name} to the database!`);
+                init();
+                console.log(responses.name);
+            });
+        });
+};
 // initiate prompt questions
 function init() {
     console.log('prompts questions')
@@ -276,7 +298,7 @@ function init() {
                 addRole();
               } else if (responses.tracker === "View All Departments") {
                 viewAllDepartments();
-              } else if (responses.tracker === "Add Department") {
+              } else if (responses.tracker === "Add Departments") {
                 addDepartment();
               } else if (responses.tracker === "Quit") {
                 quit();
