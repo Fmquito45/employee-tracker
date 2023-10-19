@@ -175,11 +175,10 @@ function updateEmployeeRole() {
         });
     });
 };
-
 // function to view all Roles
 function viewAllRoles() {
     console.log('View all Roles');
-    db.query("SELECT role.id, role.title, department.department_name, role.salary from role join department on role.department_id = department.id", (err, result) => {
+    db.query("SELECT role.id, role.title, department.department_name, role.salary FROM role JOIN department ON role.department_id = department.id", (err, result) => {
         if (err) {
             console.log(err)
         } 
@@ -187,6 +186,64 @@ function viewAllRoles() {
         init();
     });
 };
+// function to add role to database
+function addRole () {
+    console.log('Adding role into database');
+    db.query("SELECT * FROM department", (err, result) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        inquirer
+            .prompt([
+                {
+                    type: "input",
+                    name: "title",
+                    message: "What is the name of the role?",
+                },
+                {
+                    type: "input",
+                    name: "salary",
+                    message: "What is the salary of the role?",
+                },
+                {
+                    type: "list",
+                    name: "department",
+                    message: "Which department does the role belong to?",
+                    choices: result.map(
+                        (department) => department.department_name
+                    ),
+                },
+            ])
+            .then((responses) => {
+                console.log(responses);
+                const setDepartment = result.find(
+                    (department) => department.department_name === responses.department
+                );
+                console.log(setDepartment);
+                const sql =
+                "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)";
+                const values = [
+                    responses.title,
+                    responses.salary,
+                    setDepartment.id
+                ];
+                db.query(sql, values, (err, result) => {
+                        if (err) {
+                            console.log(err);
+                            return;
+                        }
+                        console.log(
+                            `Added ${responses.title} role to the database!`
+                        );
+                        init();
+                    }
+                );
+            });
+    });
+}
+
+
 // function to view all Departments
 function viewAllDepartments() {
     console.log('View all Departments');
