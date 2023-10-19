@@ -279,6 +279,17 @@ function addDepartment () {
             });
         });
 };
+// exit server and close connection
+function quit () {
+    db.end(function(err) {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log("Exited Corporation Databse");
+        }
+      });    
+};
+
 // initiate prompt questions
 function init() {
     console.log('prompts questions')
