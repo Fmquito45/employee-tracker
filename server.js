@@ -4,9 +4,7 @@ const mysql = require('mysql2');
 const db = mysql.createConnection(
     {
       host: 'localhost',
-      // MySQL username,
       user: 'root',
-      // MySQL password
       password: 'toby4545',
       database: 'corporate_db',
     },
@@ -35,7 +33,7 @@ const questions = [
     }
 ];
 
-// function to view all employees employee.manager_id CONCAT(employee.first_name, ' ', employee.last_name)
+// function to view all employees in database
 function viewAllEmployees() {
     console.log('Viewing all Employees');
     db.query("SELECT e1.id, e1.first_name AS employee_first_name, e1.last_name AS employee_last_name, role.title, department.department_name AS department, role.salary, CONCAT(e2.first_name, ' ', e2.last_name) AS manager_name FROM employee AS e1 LEFT JOIN role ON e1.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee AS e2 ON e1.manager_id = e2.id", (err, result) => {
@@ -46,7 +44,7 @@ function viewAllEmployees() {
         init();
     });
 };
-
+// function to add employee's in database
 function addEmployee() {
     console.log('Add employee data');
     db.query("SELECT id, title FROM role", (err, result) => {
@@ -121,8 +119,61 @@ function addEmployee() {
             }
         );
     });
-
-   
+};
+// function to update employee's role in database
+function updateEmployeeRole() {
+    console.log('Update employee role');
+    db.query("SELECT employee.id, employee.first_name, employee.last_name, role.title FROM employee LEFT JOIN role ON employee.role_id = role.id", (err, employeeRes) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        db.query("SELECT * FROM role", (err, roleRes) => {
+            if (err) {
+                console.log(err)
+                return;
+            }
+            inquirer
+                .prompt([
+                    {
+                        type: "list",
+                        name: "employee",
+                        message: "Which employee's role do you want to update?",
+                        choices: employeeRes.map(
+                            (employee) =>
+                                `${employee.first_name} ${employee.last_name}`
+                        ),
+                    },
+                    {
+                        type: "list",
+                        name: "role",
+                        message: "Which role do you want to assign the selected employee?",
+                        choices: roleRes.map((role) => role.title),
+                    },
+                ])
+                .then((responses) => {
+                    const employee = employeeRes.find(
+                        (employee) =>
+                            `${employee.first_name} ${employee.last_name}` ===
+                            responses.employee
+                    );
+                    const role = roleRes.find(
+                        (role) => role.title === responses.role
+                    );
+                    db.query("UPDATE employee SET role_id = ? WHERE id = ?",[role.id, employee.id],(err, res) => {
+                            if (err) {
+                                console.log(err);
+                                return;
+                            }
+                            console.log(
+                                `${employee.first_name} ${employee.last_name}'s role has been updated to ${role.title} in the database!`
+                            );
+                            init();
+                        }
+                    );
+                });
+        });
+    });
 };
 
 // function to view all Roles
