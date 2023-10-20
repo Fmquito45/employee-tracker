@@ -8,8 +8,9 @@ const db = mysql.createConnection(
       password: 'toby4545',
       database: 'corporate_db',
     },
-    console.log(`Connected to the corporate_db database.`)
+console.log(`Connected to the corporate_db database.`)
 );
+
 // connect to corporate_db
 db.connect(() => {
     init();
@@ -35,7 +36,7 @@ const questions = [
 
 // function to view all employees in database
 function viewAllEmployees() {
-    console.log('Viewing all Employees');
+    //console.log('Viewing all Employees');
     db.query("SELECT e1.id, e1.first_name AS employee_first_name, e1.last_name AS employee_last_name, role.title, department.department_name AS department, role.salary, CONCAT(e2.first_name, ' ', e2.last_name) AS manager_name FROM employee AS e1 LEFT JOIN role ON e1.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee AS e2 ON e1.manager_id = e2.id", (err, result) => {
         if (err) {
             console.log(err)
@@ -46,7 +47,7 @@ function viewAllEmployees() {
 };
 // function to add employee's in database
 function addEmployee() {
-    console.log('Add employee data');
+    //console.log('Add employee data');
     db.query("SELECT id, title FROM role", (err, result) => {
         if (err) {
             console.log(err);
@@ -95,7 +96,7 @@ function addEmployee() {
                     },
                 ])
                 .then((responses) => {
-                    console.log(responses);
+                    //console.log(responses);
                     const sql =
                         "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
                     const values = [
@@ -109,7 +110,7 @@ function addEmployee() {
                             console.log(err);
                             return;
                         }
-                        console.log("Welcome to the team!!");
+                        console.log("New Employee added to the team!!");
                         init();
                     });
                 })
@@ -122,7 +123,7 @@ function addEmployee() {
 };
 // function to update employee's role in database
 function updateEmployeeRole() {
-    console.log('Update employee role');
+    //console.log('Update employee role');
     db.query("SELECT employee.id, employee.first_name, employee.last_name, role.title FROM employee LEFT JOIN role ON employee.role_id = role.id", (err, employeeRes) => {
         if (err) {
             console.log(err);
@@ -177,7 +178,7 @@ function updateEmployeeRole() {
 };
 // function to view all Roles
 function viewAllRoles() {
-    console.log('View all Roles');
+    //console.log('View all Roles');
     db.query("SELECT role.id, role.title, department.department_name, role.salary FROM role JOIN department ON role.department_id = department.id", (err, result) => {
         if (err) {
             console.log(err)
@@ -188,7 +189,7 @@ function viewAllRoles() {
 };
 // function to add role to database
 function addRole () {
-    console.log('Adding role into database');
+    //console.log('Adding role into database');
     db.query("SELECT * FROM department", (err, result) => {
         if (err) {
             console.log(err);
@@ -216,11 +217,11 @@ function addRole () {
                 },
             ])
             .then((responses) => {
-                console.log(responses);
+                //console.log(responses);
                 const setDepartment = result.find(
                     (department) => department.department_name === responses.department
                 );
-                console.log(setDepartment);
+                //console.log(setDepartment);
                 const sql =
                 "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)";
                 const values = [
@@ -244,7 +245,7 @@ function addRole () {
 };
 // function to view all Departments
 function viewAllDepartments() {
-    console.log('View all Departments');
+    //console.log('View all Departments');
     db.query("SELECT * FROM department", (err, result) => {
         if (err) {
             console.log(err)
@@ -255,7 +256,7 @@ function viewAllDepartments() {
 };
 // function to add departments to database
 function addDepartment () {
-    console.log("Adding department");
+    //console.log("Adding department");
     inquirer
         .prompt({
             type: "input",
@@ -263,7 +264,7 @@ function addDepartment () {
             message: "What is the name of the department?",
         })
         .then((responses) => {
-            console.log(responses.name);
+            //console.log(responses.name);
             const sql = "INSERT INTO department (department_name) VALUES (?)";
             const values = [
                 responses.name
@@ -273,9 +274,8 @@ function addDepartment () {
                     console.log(err);
                     return;
                 }
-                console.log(`Added ${responses.name} to the database!`);
+                console.log(`Added ${responses.name} department to the database!`);
                 init();
-                console.log(responses.name);
             });
         });
 };
@@ -292,11 +292,11 @@ function quit () {
 
 // initiate prompt questions
 function init() {
-    console.log('prompts questions')
+    //console.log('prompts questions')
     inquirer
         .prompt(questions)
         .then((responses) => {
-            console.log(responses);
+            //console.log(responses);
             if (responses.tracker === "View All Employees") {
                 viewAllEmployees();
               } else if (responses.tracker === "Add Employee") {
